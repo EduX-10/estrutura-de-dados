@@ -16,12 +16,14 @@ NODEPTR getnode(){
     return(aux);
 }
 
-NODEPTR inserir(NODEPTR atual){
+NODEPTR inserir(NODEPTR atual, int *tam){
     NODEPTR newnode, aux;
 
     newnode = getnode();
 
-    if(newnode == NULL) return atual;
+    if(newnode == NULL){
+        return atual;
+    }
 
     printf("Digite o valor: \n");
     scanf("%d", &newnode -> info);
@@ -29,6 +31,7 @@ NODEPTR inserir(NODEPTR atual){
 
     if(atual == NULL){
         printf("Insercao finalizada!\n");
+        (*tam)++;
         return(newnode);
     }else{
         aux = atual;
@@ -37,10 +40,42 @@ NODEPTR inserir(NODEPTR atual){
         }
         atual->next = newnode;
         printf("Insercao finalizada!\n");
+        (*tam)++;;
         return(aux);
+    }    
+}
+
+NODEPTR inserirPorPosicao(NODEPTR atual, int *tam){
+    NODEPTR newnode, aux, aux1; 
+    
+    newnode = getnode();
+    if(!newnode) return atual;
+
+    int pos;
+    do{
+        printf("Digite a posicao que deseja inserir: ");
+        scanf("%d", &pos);
+    }while(pos < 1 || pos > (*tam) + 1);
+    printf("Digite um valor: ");
+    scanf("%d", &newnode->info);
+
+    if(pos == 1){
+       newnode->next = atual;
+       printf("Insercao finalizada!\n");
+       (*tam)++;
+       return(newnode);
     }
 
-    
+    aux = atual;
+    for(int i = 1; i < pos-1; i++){
+        atual = atual->next;
+    }
+    NODEPTR nextnode = atual->next;
+    atual->next = newnode;
+    newnode->next = nextnode;
+    printf("Insercao finalizada!\n");
+    (*tam)++;
+    return (aux);
 }
 
 NODEPTR remover(NODEPTR atual){
@@ -96,34 +131,41 @@ void listar(NODEPTR atual){
 int main(){
     NODEPTR cabeca = NULL;
     int condSaida = 0;
+    int tam = 0;
     do{
         int whichCase;
 
         printf("O que deseja fazer?\n");
         printf("(1) Inserir\n");
-        printf("(2) Remover\n");
-        printf("(3) Listar\n");
-        printf("(4) Sair\n");
+        printf("(2) Inserir por posicao\n");
+        printf("(3) Remover\n");
+        printf("(4) Listar\n");
+        printf("(5) Sair\n");
 
         scanf("%d", &whichCase);
         switch(whichCase){
             case 1:
                 printf("\n");
-                cabeca = inserir(cabeca);
+                cabeca = inserir(cabeca, &tam);
                 printf("\n");
                 break;
             case 2:
                 printf("\n");
-                cabeca = remover(cabeca);
+                cabeca = inserirPorPosicao(cabeca, &tam);
                 printf("\n");
                 break;
             case 3:
+                printf("\n");
+                cabeca = remover(cabeca);
+                printf("\n");
+                break;
+            case 4:
                 printf("\n");
                 printf("Listando todos os elementos...\n");
                 printf("\n");
                 listar(cabeca);
                 break;
-            case 4:
+            case 5:
                 printf("\n");
                 printf("Saindo...\n");
                 printf("\n");
