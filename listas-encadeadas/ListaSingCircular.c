@@ -18,7 +18,6 @@ NODEPTR getnode(){
 
 NODEPTR inserir(NODEPTR cabeca){
     NODEPTR newnode, atual, before;
-    atual = cabeca;
 
     newnode = getnode();
     if(!newnode) return cabeca;
@@ -26,13 +25,16 @@ NODEPTR inserir(NODEPTR cabeca){
     printf("Digite o valor: ");
     scanf("%d", &newnode->info);
 
-    newnode->next = NULL;
+    newnode->next = newnode;
 
-    if(!atual){
+    if(!cabeca){
         printf("Insercao finalizada!");
         return newnode;
     }
-    if(newnode->info < atual->info){
+
+    atual = cabeca;
+
+    if(newnode->info < cabeca->info){
         printf("Insercao finalizada!");
         newnode->next = atual;
         while(atual->next != cabeca){
@@ -43,10 +45,11 @@ NODEPTR inserir(NODEPTR cabeca){
     }
 
     before = cabeca;
-    do{
+    atual = cabeca->next;
+    while(atual != cabeca && newnode->info > atual->info){
         before = atual;
         atual = atual->next;
-    }while(atual != cabeca && newnode->info > atual->info);
+    }
 
     before->next = newnode;
     newnode->next = atual;
@@ -57,7 +60,6 @@ NODEPTR inserir(NODEPTR cabeca){
 
 NODEPTR remover(NODEPTR cabeca){
     NODEPTR atual, anterior;
-    atual = cabeca;
     
     if(!cabeca){
         printf("Nao ha itens para remover.");
@@ -67,21 +69,32 @@ NODEPTR remover(NODEPTR cabeca){
     int valor;
     printf("Digite o valor que deseja remover: ");
     scanf("%d", &valor);
-
+    
+    anterior = cabeca;
     if(cabeca->info == valor){
+        if(cabeca->next == cabeca){
+            printf("Remocao bem sucedida");
+            free(cabeca);
+            return NULL;
+        }
         atual = cabeca->next;
+        while(anterior->next != cabeca){
+            anterior = anterior->next;
+        }
+        anterior->next = cabeca->next;
         free(cabeca);
         printf("Remocao bem sucedida");
         return atual;
     }
 
-    anterior = NULL;
-    while(atual && atual->info != valor){
+    atual = cabeca->next;
+    anterior = cabeca;
+    while(atual != cabeca && atual->info != valor){
         anterior = atual;
         atual = atual->next;
     }
 
-    if(!atual){
+    if(atual == cabeca){
         printf("Valor nao encontrado.");
         return cabeca;
     }
@@ -93,12 +106,17 @@ NODEPTR remover(NODEPTR cabeca){
     return cabeca;
 }
 
-void listar(NODEPTR atual){
-    if(!atual){
+void listar(NODEPTR cabeca){
+    NODEPTR atual;
+    if(!cabeca){
         printf("A lista esta vazia.");
         return;
     }
-    while(atual){
+
+    printf("%d ", cabeca->info);
+
+    atual = cabeca->next;
+    while(atual != cabeca){
         printf("%d ", atual->info);
         atual = atual->next;
     }
