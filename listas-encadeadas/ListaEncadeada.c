@@ -1,182 +1,146 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node {
+struct node{
+
     int info;
-    struct node *next;
+    struct node* next;
+
 };
-typedef struct node *NODEPTR;
+typedef struct node* NODEPTR;
 
 NODEPTR getnode(){
-    NODEPTR aux;
-    aux = (NODEPTR) malloc(sizeof (struct node));
-    if(aux == NULL){
-        printf("Nao ha espaco disponivel.\n");
+
+    NODEPTR newnode;
+    newnode = (NODEPTR) malloc(sizeof (struct node));
+    if(!newnode){
+        printf("Espaco insuficiente\n");
     }
-    return(aux);
+
+    return newnode;
 }
 
-NODEPTR inserir(NODEPTR atual, int *tam){
+NODEPTR insert(NODEPTR ref){
     NODEPTR newnode, aux;
 
+    //Gera um novo node e controla erros
     newnode = getnode();
+    if(!newnode) return ref;
 
-    if(newnode == NULL){
-        return atual;
-    }
+    newnode->next = NULL;
 
-    printf("Digite o valor: \n");
-    scanf("%d", &newnode -> info);
-    newnode -> next = NULL;
-
-    if(atual == NULL){
-        printf("Insercao finalizada!\n");
-        (*tam)++;
-        return(newnode);
-    }else{
-        aux = atual;
-        while(atual->next != NULL){
-            atual = atual->next;
-        }
-        atual->next = newnode;
-        printf("Insercao finalizada!\n");
-        (*tam)++;;
-        return(aux);
-    }    
-}
-
-NODEPTR inserirPorPosicao(NODEPTR atual, int *tam){
-    NODEPTR newnode, aux, aux1; 
-    
-    newnode = getnode();
-    if(!newnode) return atual;
-
-    int pos;
-    do{
-        printf("Digite a posicao que deseja inserir: ");
-        scanf("%d", &pos);
-    }while(pos < 1 || pos > (*tam) + 1);
-    printf("Digite um valor: ");
+    printf("Digite o valor que deseja adicionar: ");
     scanf("%d", &newnode->info);
 
-    if(pos == 1){
-       newnode->next = atual;
-       printf("Insercao finalizada!\n");
-       (*tam)++;
-       return(newnode);
+    //Caso a lista esteja vazia
+    if(!ref) {
+        printf("Insercao bem sucedida.\n");
+        return newnode;
     }
 
-    aux = atual;
-    for(int i = 1; i < pos-1; i++){
-        atual = atual->next;
+    //Outros casos
+    aux = ref;
+    while(aux->next){
+        aux = aux->next;
     }
-    NODEPTR nextnode = atual->next;
-    atual->next = newnode;
-    newnode->next = nextnode;
-    printf("Insercao finalizada!\n");
-    (*tam)++;
-    return (aux);
+    aux->next = newnode;
+
+    printf("Insercao bem sucedida.\n");
+    return ref;
 }
 
-NODEPTR remover(NODEPTR atual){
-    if(atual == NULL){
-        printf("Nao ha itens para remover.\n");
-        return atual;
-    }
+void list(NODEPTR ref){
 
-    printf("Digite o valor que deseja remover: ");
-    int valor;
-    scanf("%d", &valor);
-
-    NODEPTR nav, aux;
-
-    if(atual->info == valor){
-        aux = atual->next;
-        free(atual);
-        printf("Remocao bem sucedida\n");
-        return(aux);
-    }
-
-    nav = atual->next;
-    aux = atual;
-
-    while(nav != NULL){
-        if(nav->info == valor){
-            aux->next = nav->next;
-            free(nav);
-            printf("Remocao bem sucedida\n");
-            return atual;
-        }
-        aux = nav;
-        nav = nav->next;
-    }
-
-    printf("Valor não encontrado\n");
-    return atual;
-}
-
-void listar(NODEPTR atual){
-    if(atual == NULL){
-        printf("Nao ha itens na lista.\n");
-        printf("\n");
+    if(!ref){
+        printf("A lista esta vazia.\n");
         return;
     }
-    while(atual != NULL){
-        printf("%d ", atual->info);
-        atual = atual->next;
+
+    while(ref){
+        printf("%d ", ref->info);
+        ref = ref->next;
     }
-    printf("\n");
+
+}
+
+NODEPTR remover(NODEPTR ref){
+    NODEPTR aux, cabeca;
+
+    //Caso a lista esteja vazia
+    if(!ref){
+        printf("A lista esta vazia.\n");
+        return ref;
+    }
+
+    int value;
+    printf("Digite o valor que deseja remover");
+    scanf("%d", &value);
+
+    if(ref->info == value){
+        aux = ref->next;
+        free(ref);
+        printf("Remocao bem sucedida.\n");
+        return aux;
+    }
+
+    //Percorre a lista procurando o valor
+    aux = NULL;
+    cabeca = ref;
+    while(ref && ref->info != value){
+        aux = ref;
+        ref = ref->next;
+    }
+
+    //Caso nao tenha encontrado
+    if(!ref){
+        printf("Valor nao encontrado.\n");
+        return cabeca;
+    }
+    
+    //Caso tenha encotrado
+    aux->next = ref->next;
+    free(ref);
+    printf("Remocao bem sucedida.\n");
+
+    return cabeca;
 }
 
 int main(){
+
     NODEPTR cabeca = NULL;
     int condSaida = 0;
-    int tam = 0;
-    do{
+    while(!condSaida){
         int whichCase;
-
-        printf("O que deseja fazer?\n");
-        printf("(1) Inserir\n");
-        printf("(2) Inserir por posicao\n");
-        printf("(3) Remover\n");
-        printf("(4) Listar\n");
-        printf("(5) Sair\n");
-
+        printf("\n");
+        printf("Escolha uma opcao:\n");
+        printf("1 - Adicionar um item;\n");
+        printf("2 - Remover um item;\n");
+        printf("3 - Listar itens;\n");
+        printf("4 - Sair\n");
         scanf("%d", &whichCase);
+
         switch(whichCase){
             case 1:
                 printf("\n");
-                cabeca = inserir(cabeca, &tam);
-                printf("\n");
+                cabeca = insert(cabeca);
                 break;
             case 2:
                 printf("\n");
-                cabeca = inserirPorPosicao(cabeca, &tam);
-                printf("\n");
+                cabeca = remover(cabeca);
                 break;
             case 3:
                 printf("\n");
-                cabeca = remover(cabeca);
-                printf("\n");
+                list(cabeca);
                 break;
             case 4:
                 printf("\n");
-                printf("Listando todos os elementos...\n");
-                printf("\n");
-                listar(cabeca);
-                break;
-            case 5:
-                printf("\n");
                 printf("Saindo...\n");
-                printf("\n");
                 condSaida = 1;
                 break;
             default:
-                printf("\n");
-                printf("Opcao invalida. Por favor selecione uma opcao valida.\n");
-                printf("\n");
-                break;
+                printf("Opcao invalida.\n");
         }
-    }while(!condSaida);
+    }
+    
     return 0;
 }

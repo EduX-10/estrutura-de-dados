@@ -21,7 +21,7 @@ NODEPTR getnode(){
 }
 
 NODEPTR insert(NODEPTR ref){
-    NODEPTR newnode, aux;
+    NODEPTR newnode, aux, nav;
 
     //Gera um novo node e controla erros
     newnode = getnode();
@@ -35,41 +35,54 @@ NODEPTR insert(NODEPTR ref){
     //Caso a lista esteja vazia
     if(!ref) {
         printf("Insercao bem sucedida.\n");
-        newnode->next = newnode;
         return newnode;
     }
 
-    //Outros casos
-    aux = ref;
-    while(aux->next != ref){
-        aux = aux->next;
+    //Caso o valor inserido seja o menor
+    if(newnode->info < ref->info){
+        newnode->next = ref;
+        printf("Insercao bem sucedida.\n");
+        return newnode;
     }
+
+    nav = ref;
+    aux = NULL;
+    while(nav && newnode->info > nav->info){
+        aux = nav;
+        nav = nav->next;
+    }
+
+    //Caso o valor inserido seja o maior
+    if(!nav){
+        aux->next = newnode;
+        printf("Insercao bem sucedida.\n");
+        return ref;
+    }
+
+    //Outros Casos
     aux->next = newnode;
-    newnode->next = ref;
+    newnode->next = nav;
 
     printf("Insercao bem sucedida.\n");
     return ref;
 }
 
 void list(NODEPTR ref){
-    NODEPTR aux;
 
     if(!ref){
         printf("A lista esta vazia.\n");
         return;
     }
 
-    printf("%d ", ref->info);
-    aux = ref->next;
-    while(aux != ref){
-        printf("%d ", aux->info);
-        aux = aux->next;
+    while(ref){
+        printf("%d ", ref->info);
+        ref = ref->next;
     }
 
 }
 
 NODEPTR remover(NODEPTR ref){
-    NODEPTR aux, nav;
+    NODEPTR aux, cabeca;
 
     //Caso a lista esteja vazia
     if(!ref){
@@ -78,43 +91,36 @@ NODEPTR remover(NODEPTR ref){
     }
 
     int value;
-    printf("Digite o valor que deseja remover: ");
+    printf("Digite o valor que deseja remover");
     scanf("%d", &value);
 
     if(ref->info == value){
         aux = ref->next;
-
-        nav = ref;
-        while(nav->next != ref){
-            nav = nav->next;
-        }
-        nav->next = aux;
-
         free(ref);
         printf("Remocao bem sucedida.\n");
         return aux;
     }
 
     //Percorre a lista procurando o valor
-    aux = ref;
-    nav = ref->next;
-    while(nav != ref && nav->info != value){
-        aux = nav;
-        nav = nav->next;
+    aux = NULL;
+    cabeca = ref;
+    while(ref && ref->info != value){
+        aux = ref;
+        ref = ref->next;
     }
 
     //Caso nao tenha encontrado
-    if(nav == ref){
+    if(!ref){
         printf("Valor nao encontrado.\n");
-        return ref;
+        return cabeca;
     }
     
     //Caso tenha encotrado
-    aux->next = nav->next;
-    free(nav);
+    aux->next = ref->next;
+    free(ref);
     printf("Remocao bem sucedida.\n");
 
-    return ref;
+    return cabeca;
 }
 
 int main(){

@@ -21,7 +21,7 @@ NODEPTR getnode(){
 }
 
 NODEPTR insert(NODEPTR ref){
-    NODEPTR newnode, aux;
+    NODEPTR newnode, aux, nav;
 
     //Gera um novo node e controla erros
     newnode = getnode();
@@ -39,13 +39,38 @@ NODEPTR insert(NODEPTR ref){
         return newnode;
     }
 
-    //Outros casos
-    aux = ref;
-    while(aux->next != ref){
-        aux = aux->next;
+    //Caso a inserção seja na cabeça
+    if(newnode->info < ref->info){
+        nav = ref;
+        while(nav->next != ref){
+            nav = nav->next;
+        }
+        newnode->next = ref;
+        nav->next = newnode;
+
+        printf("Insercao bem sucedida.\n");
+        return newnode;
     }
+
+    aux = ref;
+    nav = ref->next;
+    while(nav != ref && newnode->info > nav->info){
+        aux = nav;
+        nav = nav->next;
+    }
+
+    //Caso a inserção seja na cauda
+    if(nav == ref){
+        aux->next = newnode;
+        newnode->next = ref;
+
+        printf("Insercao bem sucedida.\n");
+        return ref;
+    }
+
+    //Outros casos
+    newnode->next = nav;
     aux->next = newnode;
-    newnode->next = ref;
 
     printf("Insercao bem sucedida.\n");
     return ref;
